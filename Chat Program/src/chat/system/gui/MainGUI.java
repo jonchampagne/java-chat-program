@@ -7,6 +7,7 @@ package chat.system.gui;
 import chat.system.objects.ChatConnection;
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Observable;
@@ -52,6 +53,12 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         changeServerMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        messageTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                messageTextFieldKeyTyped(evt);
+            }
+        });
 
         mainTextArea.setColumns(20);
         mainTextArea.setRows(5);
@@ -116,7 +123,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -146,7 +153,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     private void changeUsernameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeUsernameMenuItemActionPerformed
         try {
             String newName = JOptionPane.showInputDialog(this, "Please enter your new username.");
-            connection.setSelf(new ChatPerson(newName,"online"));
+            connection.setSelf(new ChatPerson(newName, "online"));
         } catch (IOException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -154,7 +161,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
 
     private void changeServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeServerMenuItemActionPerformed
         try {
-            String address=JOptionPane.showInputDialog(this, "Server address:");
+            String address = JOptionPane.showInputDialog(this, "Server address:");
             connection.setServer(address, 3191);
         } catch (UnknownHostException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -162,6 +169,12 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_changeServerMenuItemActionPerformed
+
+    private void messageTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTextFieldKeyTyped
+        if (evt.getKeyChar() == '\n') {
+            sendButtonActionPerformed(null);
+        }
+    }//GEN-LAST:event_messageTextFieldKeyTyped
 
     /**
      * @param args the command line arguments
@@ -198,9 +211,9 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     public void update(Observable o, Object arg) {
         if (o instanceof ChatConnection) {
             if (arg instanceof ChatMessage) {
-                mainTextArea.append(((ChatMessage) arg).getSender() + ": " + ((ChatMessage) arg).getMessage()+"\n");
+                mainTextArea.append(((ChatMessage) arg).getSender() + ": " + ((ChatMessage) arg).getMessage() + "\n");
             } else if (arg instanceof ChatPerson) {
-                mainTextArea.append(((ChatPerson)arg).getName()+" has entered\n");
+                mainTextArea.append(((ChatPerson) arg).getName() + " has entered\n");
             }
         }
     }
