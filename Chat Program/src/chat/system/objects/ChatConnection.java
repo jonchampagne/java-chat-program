@@ -25,9 +25,10 @@ public class ChatConnection extends Observable implements Runnable {
     private ObjectOutputStream oOut;
     private ObjectInputStream oIn;
     private String uname;
+    private Socket server;
 
     public ChatConnection(String address, int port) throws UnknownHostException, IOException {
-        Socket server = new Socket(address, port);
+        server = new Socket(address, port);
         oOut = new ObjectOutputStream(server.getOutputStream());
         oIn = new ObjectInputStream(server.getInputStream());
         self = new ChatPerson(uname);
@@ -76,7 +77,8 @@ public class ChatConnection extends Observable implements Runnable {
     public void setServer(String address, int port) throws UnknownHostException, IOException {
         oOut.close();
         oIn.close();
-        Socket server = new Socket(address, port);
+        server.close();
+        server = new Socket(address, port);
         oOut = new ObjectOutputStream(server.getOutputStream());
         oIn = new ObjectInputStream(server.getInputStream());
         oOut.writeObject(self);

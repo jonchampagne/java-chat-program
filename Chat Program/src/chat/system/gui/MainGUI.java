@@ -87,6 +87,11 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         editMenu.add(changeUsernameMenuItem);
 
         changeServerMenuItem.setText("Change Server");
+        changeServerMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeServerMenuItemActionPerformed(evt);
+            }
+        });
         editMenu.add(changeServerMenuItem);
 
         jMenuBar1.add(editMenu);
@@ -147,6 +152,17 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         }
     }//GEN-LAST:event_changeUsernameMenuItemActionPerformed
 
+    private void changeServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeServerMenuItemActionPerformed
+        try {
+            String address=JOptionPane.showInputDialog(this, "Server address:");
+            connection.setServer(address, 3191);
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_changeServerMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -184,14 +200,14 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             if (arg instanceof ChatMessage) {
                 mainTextArea.append(((ChatMessage) arg).getSender() + ": " + ((ChatMessage) arg).getMessage()+"\n");
             } else if (arg instanceof ChatPerson) {
-                mainTextArea.append(((ChatPerson)arg).getName()+" has entered");
+                mainTextArea.append(((ChatPerson)arg).getName()+" has entered\n");
             }
         }
     }
 
     private void initConnection() throws UnknownHostException, IOException {
         System.out.println("init connection");
-        connection = new ChatConnection("142.55.23.168", 3191);
+        connection = new ChatConnection("localhost", 3191);
         connection.addObserver(this);
         Thread t = new Thread(connection);
         t.start();
