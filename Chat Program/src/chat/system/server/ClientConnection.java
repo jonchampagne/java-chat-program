@@ -2,6 +2,22 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
+/*
+ * TRACK THIS DOWN
+ * java.net.SocketException: Connection reset
+ * at java.net.SocketInputStream.read(SocketInputStream.java:134)
+ * at java.net.SocketInputStream.read(SocketInputStream.java:121)
+ * at java.net.SocketInputStream.read(SocketInputStream.java:203)
+ * at java.io.ObjectInputStream$PeekInputStream.peek(ObjectInputStream.java:2272)
+ * at java.io.ObjectInputStream$BlockDataInputStream.peek(ObjectInputStream.java:2565)
+ * at java.io.ObjectInputStream$BlockDataInputStream.peekByte(ObjectInputStream.java:2575)
+ * at java.io.ObjectInputStream.readObject0(ObjectInputStream.java:1315)
+ * at java.io.ObjectInputStream.readObject(ObjectInputStream.java:369)
+ * at chat.system.server.ClientConnection.run(ClientConnection.java:50)
+ * at java.lang.Thread.run(Thread.java:722)
+ * END TRACK THIS DOWN
+ */
 package chat.system.server;
 
 import chat.system.objects.ChatMessage;
@@ -11,6 +27,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -48,7 +65,7 @@ public class ClientConnection extends Observable implements Runnable, Observer {
             try {
                 this.setChanged();
                 this.notifyObservers(oIn.readObject());
-            } catch (EOFException ex) {
+            } catch (EOFException | SocketException ex) {
                 break;
             } catch (IOException ex) {
                 Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
