@@ -29,16 +29,12 @@ public class Main {
             @Override
             public void run() {
                 try {
-                    Server.main(new String[0]);
+                    Server.main(null);
                 } catch (IOException ex) {
                     Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
-        
-        t.start();
-        Thread.sleep(5000);
-        
         new MainGUI().setVisible(true);
     }
 }

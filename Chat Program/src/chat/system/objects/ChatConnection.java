@@ -72,4 +72,13 @@ public class ChatConnection extends Observable implements Runnable {
         this.self = self;
         this.sendObject(self);
     }
+
+    public void setServer(String address, int port) throws UnknownHostException, IOException {
+        oOut.close();
+        oIn.close();
+        Socket server = new Socket(address, port);
+        oOut = new ObjectOutputStream(server.getOutputStream());
+        oIn = new ObjectInputStream(server.getInputStream());
+        oOut.writeObject(self);
+    }
 }
