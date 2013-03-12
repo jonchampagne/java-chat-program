@@ -12,6 +12,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -43,8 +44,11 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         mainTextArea = new javax.swing.JTextArea();
         sendButton = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        fileMenu = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
+        changeUsernameMenuItem = new javax.swing.JMenuItem();
+        changeServerMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -59,7 +63,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             }
         });
 
-        jMenu1.setText("File");
+        fileMenu.setText("File");
 
         jMenuItem1.setText("Quit");
         jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
@@ -67,9 +71,24 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
                 jMenuItem1ActionPerformed(evt);
             }
         });
-        jMenu1.add(jMenuItem1);
+        fileMenu.add(jMenuItem1);
 
-        jMenuBar1.add(jMenu1);
+        jMenuBar1.add(fileMenu);
+
+        editMenu.setText("Edit");
+
+        changeUsernameMenuItem.setText("Change Username");
+        changeUsernameMenuItem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                changeUsernameMenuItemActionPerformed(evt);
+            }
+        });
+        editMenu.add(changeUsernameMenuItem);
+
+        changeServerMenuItem.setText("Change Server");
+        editMenu.add(changeServerMenuItem);
+
+        jMenuBar1.add(editMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -91,7 +110,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 226, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 250, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -118,6 +137,11 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
 
     }//GEN-LAST:event_sendButtonActionPerformed
 
+    private void changeUsernameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeUsernameMenuItemActionPerformed
+        String newName = JOptionPane.showInputDialog(this, "Please enter your new username.");
+        System.out.println(newName);
+    }//GEN-LAST:event_changeUsernameMenuItemActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -137,7 +161,10 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenuItem changeServerMenuItem;
+    private javax.swing.JMenuItem changeUsernameMenuItem;
+    private javax.swing.JMenu editMenu;
+    private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
@@ -148,11 +175,9 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        if(o instanceof ChatConnection)
-        {
-            if(arg instanceof ChatMessage)
-            {
-                mainTextArea.append(((ChatMessage)arg).getSender()+": "+((ChatMessage)arg).getMessage());
+        if (o instanceof ChatConnection) {
+            if (arg instanceof ChatMessage) {
+                mainTextArea.append(((ChatMessage) arg).getSender() + ": " + ((ChatMessage) arg).getMessage());
             }
         }
     }
