@@ -52,6 +52,10 @@ public class Server extends Observable implements Observer {
                 this.notifyObservers(arg);
             } else if (arg instanceof ServerMessage) {
                 parseRequest((ServerMessage) arg);
+            } else if (arg instanceof ChatPerson) {
+                people.add((ChatPerson)arg);
+                this.setChanged();
+                this.notifyObservers(arg);
             }
         }
     }
@@ -61,7 +65,7 @@ public class Server extends Observable implements Observer {
         while (true) {
             try {
                 Socket s = ss.accept();
-                System.out.println("New Client"+s.getInetAddress());
+                System.out.println("New Client" + s.getInetAddress());
                 ClientConnection cc = new ClientConnection(s);
                 cc.addObserver(this);
                 this.addObserver(cc);

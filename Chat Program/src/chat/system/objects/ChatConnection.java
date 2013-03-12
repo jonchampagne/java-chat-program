@@ -25,12 +25,13 @@ public class ChatConnection extends Observable implements Runnable {
     private ObjectOutputStream oOut;
     private ObjectInputStream oIn;
     private String uname;
+    private Socket server;
 
     public ChatConnection(String address, int port) throws UnknownHostException, IOException {
-        Socket server = new Socket(address, port);
+        server = new Socket(address, port);
         oOut = new ObjectOutputStream(server.getOutputStream());
         oIn = new ObjectInputStream(server.getInputStream());
-        self=new ChatPerson(uname);
+        self = new ChatPerson(uname);
         oOut.writeObject(self);
     }
 
@@ -43,8 +44,11 @@ public class ChatConnection extends Observable implements Runnable {
                     System.out.println("changed");
                     this.setChanged();
                     this.notifyObservers(o);
+                } else if (o instanceof ChatPerson) {
+                    this.setChanged();
+                    this.notifyObservers(o);
                 }
-            } catch(EOFException ex) {
+            } catch (EOFException ex) {
                 break;
             } catch (IOException ex) {
                 Logger.getLogger(ChatConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,10 +68,19 @@ public class ChatConnection extends Observable implements Runnable {
     public ChatPerson getSelf() {
         return self;
     }
-    
-    public void setSelf(ChatPerson self) throws IOException
-    {
-        this.self=self;
+
+    public void setSelf(ChatPerson self) throws IOException {
+        this.self = self;
         this.sendObject(self);
+    }
+
+    public void setServer(String address, int port) throws UnknownHostException, IOException {
+        oOut.close();
+        oIn.close();
+        server.close();
+        server = new Socket(address, port);
+        oOut = new ObjectOutputStream(server.getOutputStream());
+        oIn = new ObjectInputStream(server.getInputStream());
+        oOut.writeObject(self);
     }
 }

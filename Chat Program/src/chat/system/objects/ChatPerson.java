@@ -4,11 +4,13 @@
  */
 package chat.system.objects;
 
+import java.io.Serializable;
+
 /**
  *
  * @author jon
  */
-public class ChatPerson {
+public class ChatPerson implements Serializable{
 
     private String name;
     private String status;
