@@ -6,6 +6,7 @@ package chat.system.gui;
 
 import chat.system.objects.ChatConnection;
 import chat.system.objects.ChatMessage;
+import chat.system.objects.ChatPerson;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Observable;
@@ -138,8 +139,12 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void changeUsernameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeUsernameMenuItemActionPerformed
-        String newName = JOptionPane.showInputDialog(this, "Please enter your new username.");
-        System.out.println(newName);
+        try {
+            String newName = JOptionPane.showInputDialog(this, "Please enter your new username.");
+            connection.setSelf(new ChatPerson(newName,"online"));
+        } catch (IOException ex) {
+            Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_changeUsernameMenuItemActionPerformed
 
     /**
@@ -177,7 +182,9 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     public void update(Observable o, Object arg) {
         if (o instanceof ChatConnection) {
             if (arg instanceof ChatMessage) {
-                mainTextArea.append(((ChatMessage) arg).getSender() + ": " + ((ChatMessage) arg).getMessage());
+                mainTextArea.append(((ChatMessage) arg).getSender() + ": " + ((ChatMessage) arg).getMessage()+"\n");
+            } else if (arg instanceof ChatPerson) {
+                mainTextArea.append(((ChatPerson)arg).getName()+" has entered");
             }
         }
     }
@@ -188,5 +195,6 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         connection.addObserver(this);
         Thread t = new Thread(connection);
         t.start();
+        changeUsernameMenuItemActionPerformed(null);
     }
 }

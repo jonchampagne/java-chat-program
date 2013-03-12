@@ -30,7 +30,7 @@ public class ChatConnection extends Observable implements Runnable {
         Socket server = new Socket(address, port);
         oOut = new ObjectOutputStream(server.getOutputStream());
         oIn = new ObjectInputStream(server.getInputStream());
-        self=new ChatPerson(uname);
+        self = new ChatPerson(uname);
         oOut.writeObject(self);
     }
 
@@ -43,8 +43,11 @@ public class ChatConnection extends Observable implements Runnable {
                     System.out.println("changed");
                     this.setChanged();
                     this.notifyObservers(o);
+                } else if (o instanceof ChatPerson) {
+                    this.setChanged();
+                    this.notifyObservers(o);
                 }
-            } catch(EOFException ex) {
+            } catch (EOFException ex) {
                 break;
             } catch (IOException ex) {
                 Logger.getLogger(ChatConnection.class.getName()).log(Level.SEVERE, null, ex);
@@ -64,10 +67,9 @@ public class ChatConnection extends Observable implements Runnable {
     public ChatPerson getSelf() {
         return self;
     }
-    
-    public void setSelf(ChatPerson self) throws IOException
-    {
-        this.self=self;
+
+    public void setSelf(ChatPerson self) throws IOException {
+        this.self = self;
         this.sendObject(self);
     }
 }

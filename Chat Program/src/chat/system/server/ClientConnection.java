@@ -72,15 +72,9 @@ public class ClientConnection extends Observable implements Runnable, Observer {
     public void update(Observable o, Object arg) {
         System.out.println("update");
         if (o instanceof Server) {
-            if (arg instanceof ChatMessage) {
+            if (arg instanceof ChatMessage || arg instanceof ChatPerson) {
                 try {
                     oOut.writeObject(arg);
-
-
-
-
-
-
                 } catch (IOException ex) {
                     Logger.getLogger(ClientConnection.class
                             .getName()).log(Level.SEVERE, null, ex);
