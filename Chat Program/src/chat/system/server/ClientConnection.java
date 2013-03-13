@@ -34,7 +34,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *
+ * A server's connection to a client
+ * 
  * @author jon
  */
 public class ClientConnection extends Observable implements Runnable, Observer {
@@ -42,7 +43,12 @@ public class ClientConnection extends Observable implements Runnable, Observer {
     private ObjectInputStream oIn;
     private ObjectOutputStream oOut;
     private ChatPerson name;
-
+    /**
+     * 
+     * @param s The socket connected to the client
+     * @throws IOException
+     * @throws ClassNotFoundException 
+     */
     ClientConnection(Socket s) throws IOException, ClassNotFoundException {
         System.out.println("client connection");
         oIn = new ObjectInputStream(s.getInputStream());
@@ -78,7 +84,6 @@ public class ClientConnection extends Observable implements Runnable, Observer {
             oIn.close();
             oOut.close();
             this.deleteObservers();
-
         } catch (IOException ex) {
             Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -99,7 +104,11 @@ public class ClientConnection extends Observable implements Runnable, Observer {
             }
         }
     }
-
+    
+    /**
+     * Gets the ChatPerson associated with this connection
+     * @return 
+     */
     public ChatPerson getName() {
         System.out.println("get name");
         return name;

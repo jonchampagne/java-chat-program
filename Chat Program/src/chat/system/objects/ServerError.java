@@ -7,7 +7,7 @@ package chat.system.objects;
 import java.io.Serializable;
 
 /**
- *
+ * An error returned by the server.
  * @author jon
  */
 public class ServerError implements Serializable {

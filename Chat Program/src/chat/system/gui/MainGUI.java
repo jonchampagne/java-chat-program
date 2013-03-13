@@ -7,7 +7,6 @@ package chat.system.gui;
 import chat.system.objects.ChatConnection;
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
-import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Observable;
@@ -60,6 +59,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             }
         });
 
+        mainTextArea.setEditable(false);
         mainTextArea.setColumns(20);
         mainTextArea.setRows(5);
         jScrollPane1.setViewportView(mainTextArea);
@@ -212,8 +212,10 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         if (o instanceof ChatConnection) {
             if (arg instanceof ChatMessage) {
                 mainTextArea.append(((ChatMessage) arg).getSender() + ": " + ((ChatMessage) arg).getMessage() + "\n");
+                mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
             } else if (arg instanceof ChatPerson) {
                 mainTextArea.append(((ChatPerson) arg).getName() + " has entered\n");
+                mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
             }
         }
     }

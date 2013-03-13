@@ -18,6 +18,9 @@ import java.util.logging.Logger;
 public class Main {
 
     /**
+     *
+     * Starts the server, then the client.
+     *
      * @param args the command line arguments
      */
     public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
@@ -28,11 +31,7 @@ public class Main {
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    Server.main(new String[0]);
-                } catch (IOException ex) {
-                    Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                Server.main(new String[0]);
             }
         });
         t.start();

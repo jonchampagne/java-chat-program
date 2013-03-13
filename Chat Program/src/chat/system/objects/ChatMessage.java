@@ -7,7 +7,8 @@ package chat.system.objects;
 import java.io.Serializable;
 
 /**
- *
+ * A message sent by the user. Usually for chatting.
+ * 
  * @author jon
  */
 public class ChatMessage implements Serializable {

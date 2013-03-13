@@ -7,7 +7,7 @@ package chat.system.objects;
 import java.io.Serializable;
 
 /**
- *
+ * A message returned by the server. Usually a reply to a request.
  * @author jon
  */
 public class ServerMessage implements Serializable {
