@@ -44,6 +44,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         jScrollPane1 = new javax.swing.JScrollPane();
         mainTextArea = new javax.swing.JTextArea();
         sendButton = new javax.swing.JButton();
+        statusBarLabel = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -52,6 +53,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         changeServerMenuItem = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Chat");
 
         messageTextField.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -70,6 +72,10 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
                 sendButtonActionPerformed(evt);
             }
         });
+
+        statusBarLabel.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
+        statusBarLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        statusBarLabel.setText("Ready");
 
         fileMenu.setText("File");
 
@@ -109,11 +115,12 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+            .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(statusBarLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(messageTextField)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(sendButton)))
@@ -123,11 +130,13 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sendButton))
+                    .addComponent(sendButton)
+                    .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(statusBarLabel)
                 .addContainerGap())
         );
 
@@ -163,6 +172,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         try {
             String address = JOptionPane.showInputDialog(this, "Server address:");
             connection.setServer(address, 3191);
+            statusBarLabel.setText("Connected to "+connection.getHost()+" as "+connection.getSelf().getName());
         } catch (UnknownHostException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -205,6 +215,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     private javax.swing.JTextArea mainTextArea;
     private javax.swing.JTextField messageTextField;
     private javax.swing.JButton sendButton;
+    private javax.swing.JLabel statusBarLabel;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -227,5 +238,6 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         Thread t = new Thread(connection);
         t.start();
         changeUsernameMenuItemActionPerformed(null);
+        statusBarLabel.setText("Connected to "+connection.getHost());
     }
 }
