@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * Chat server
  *
  * @author jon
  */
@@ -24,19 +25,30 @@ public class Server extends Observable implements Observer {
 
     ServerSocket ss;
     ArrayList<ChatPerson> people;
-
-    public static void main(String args[]) throws IOException {
+    /**
+     * Starts the server
+     * @param args
+     * @throws IOException 
+     */
+    public static void main(String args[]) {
         System.out.println("main");
         for (int i = 0; i < args.length; i++) {
             System.out.println(args[i]);
         }
         new Server();
     }
-
-    public Server() throws IOException {
+    
+    /**
+     * A chat server
+     */
+    public Server()  {
         System.out.println("server");
         System.out.println("Server starting");
-        ss = new ServerSocket(3191);
+        try {
+            ss = new ServerSocket(3191);
+        } catch (IOException ex) {
+            System.err.println("Could not start server. Could not open port");
+        }
         people = new ArrayList<>();
         System.out.println("Listening for clients");
         listenForClients();
@@ -53,7 +65,7 @@ public class Server extends Observable implements Observer {
             } else if (arg instanceof ServerMessage) {
                 parseRequest((ServerMessage) arg);
             } else if (arg instanceof ChatPerson) {
-                people.add((ChatPerson)arg);
+                people.add((ChatPerson) arg);
                 this.setChanged();
                 this.notifyObservers(arg);
             }

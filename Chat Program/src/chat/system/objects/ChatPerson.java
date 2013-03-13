@@ -7,7 +7,8 @@ package chat.system.objects;
 import java.io.Serializable;
 
 /**
- *
+ * A person logged onto the server
+ * 
  * @author jon
  */
 public class ChatPerson implements Serializable{

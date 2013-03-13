@@ -16,7 +16,8 @@ import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
- *
+ * A client's connection to the server
+ * 
  * @author jon
  */
 public class ChatConnection extends Observable implements Runnable {
@@ -59,21 +60,39 @@ public class ChatConnection extends Observable implements Runnable {
         JOptionPane.showMessageDialog(null, "Server connection lost. Closing.");
         System.exit(0);
     }
-
+    
+    /**
+     * Sends an object to the server
+     * @param o
+     * @throws IOException 
+     */
     public void sendObject(Object o) throws IOException {
         System.out.println("Sending message");
         oOut.writeObject(o);
     }
-
+    /**
+     * Gets the ChatPerson associated with with this connection
+     * @return 
+     */
     public ChatPerson getSelf() {
         return self;
     }
-
+    /**
+     * Sets the ChatPerson on the client and the server
+     * @param self
+     * @throws IOException 
+     */
     public void setSelf(ChatPerson self) throws IOException {
         this.self = self;
         this.sendObject(self);
     }
-
+    /**
+     * Changes the server connected to
+     * @param address
+     * @param port
+     * @throws UnknownHostException
+     * @throws IOException 
+     */
     public void setServer(String address, int port) throws UnknownHostException, IOException {
         oOut.close();
         oIn.close();
