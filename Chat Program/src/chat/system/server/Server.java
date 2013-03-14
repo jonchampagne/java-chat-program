@@ -25,10 +25,12 @@ public class Server extends Observable implements Observer {
 
     ServerSocket ss;
     ArrayList<ChatPerson> people;
+
     /**
      * Starts the server
+     *
      * @param args
-     * @throws IOException 
+     * @throws IOException
      */
     public static void main(String args[]) {
         System.out.println("main");
@@ -37,13 +39,13 @@ public class Server extends Observable implements Observer {
         }
         new Server();
     }
-    
+
     /**
      * A chat server
      */
-    public Server()  {
-        System.out.println("server");
-        System.out.println("Server starting");
+    public Server() {
+        //System.out.println("server");
+        //System.out.println("Server starting");
         try {
             ss = new ServerSocket(3191);
         } catch (IOException ex) {
@@ -56,7 +58,7 @@ public class Server extends Observable implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        System.out.println("update");
+        //System.out.println("update");
         if (o instanceof ClientConnection) {
             // Echo to all clients
             if (arg instanceof ChatMessage) {
@@ -73,7 +75,7 @@ public class Server extends Observable implements Observer {
     }
 
     private void listenForClients() {
-        System.out.println("listen for clients");
+        //System.out.println("listen for clients");
         while (true) {
             try {
                 Socket s = ss.accept();
@@ -93,8 +95,13 @@ public class Server extends Observable implements Observer {
     }
 
     private void parseRequest(ServerMessage serverMessage) {
-        System.out.println("parse request");
+        //System.out.println("parse request");
         if (serverMessage.getServerCode() == 1) {
+            // Send it to all clients
+            this.setChanged();
+            this.notifyObservers(serverMessage);
+        } else if (serverMessage.getServerCode() == 2) {
+            // Loop through and send all clients one at a time
         }
     }
 }

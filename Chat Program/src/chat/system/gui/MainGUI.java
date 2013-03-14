@@ -7,6 +7,8 @@ package chat.system.gui;
 import chat.system.objects.ChatConnection;
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
+import chat.system.objects.ServerMessage;
+import java.awt.Color;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Observable;
@@ -14,6 +16,7 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.ScrollPaneConstants;
 
 /**
  *
@@ -29,6 +32,8 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     public MainGUI() throws UnknownHostException, IOException {
         initComponents();
         initConnection();
+        mainTextArea.setLineWrap(true);
+        mainTextArea.setWrapStyleWord(true);
     }
 
     /**
@@ -172,7 +177,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         try {
             String address = JOptionPane.showInputDialog(this, "Server address:");
             connection.setServer(address, 3191);
-            statusBarLabel.setText("Connected to "+connection.getHost()+" as "+connection.getSelf().getName());
+            statusBarLabel.setText("Connected to " + connection.getHost() + " as " + connection.getSelf().getName());
         } catch (UnknownHostException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -221,12 +226,22 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o instanceof ChatConnection) {
+
             if (arg instanceof ChatMessage) {
+                // Display the message. It's from another user.
                 mainTextArea.append(((ChatMessage) arg).getSender() + ": " + ((ChatMessage) arg).getMessage() + "\n");
                 mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
             } else if (arg instanceof ChatPerson) {
+                // Notify us of user connection. TODO Also add user to list
                 mainTextArea.append(((ChatPerson) arg).getName() + " has entered\n");
                 mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
+            } else if (arg instanceof ServerMessage) {
+                // Message from server. Display special message depending on contents.
+                ServerMessage message = (ServerMessage) arg;
+                if (message.getServerCode() == 1) {
+                    ChatPerson person=(ChatPerson)message.getData();
+                    System.out.println(person.getName());
+                }
             }
         }
     }
@@ -238,6 +253,6 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         Thread t = new Thread(connection);
         t.start();
         changeUsernameMenuItemActionPerformed(null);
-        statusBarLabel.setText("Connected to "+connection.getHost());
+        statusBarLabel.setText("Connected to " + connection.getHost());
     }
 }
