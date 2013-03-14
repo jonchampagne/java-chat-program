@@ -8,7 +8,8 @@ import chat.system.objects.ChatConnection;
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
 import chat.system.objects.ServerMessage;
-import java.awt.Color;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.Observable;
@@ -16,15 +17,15 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.ScrollPaneConstants;
 
 /**
  *
  * @author jon
  */
 public class MainGUI extends javax.swing.JFrame implements Observer {
-
+    
     ChatConnection connection;
+    ChatLog log;
 
     /**
      * Creates new form MainGUI
@@ -32,6 +33,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     public MainGUI() throws UnknownHostException, IOException {
         initComponents();
         initConnection();
+        log = new ChatLog(new FileOutputStream(new File("chat.log")));
         mainTextArea.setLineWrap(true);
         mainTextArea.setWrapStyleWord(true);
     }
@@ -127,7 +129,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(messageTextField)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(sendButton)))
                 .addContainerGap())
         );
@@ -135,11 +137,11 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 314, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sendButton)
-                    .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(sendButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusBarLabel)
                 .addContainerGap())
@@ -151,28 +153,33 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-
+    
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         ChatMessage m = new ChatMessage(messageTextField.getText(), connection.getSelf().getName());
         try {
             connection.sendObject(m);
             messageTextField.setText("");
-
         } catch (IOException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        
     }//GEN-LAST:event_sendButtonActionPerformed
-
+    
     private void changeUsernameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeUsernameMenuItemActionPerformed
         try {
-            String newName = JOptionPane.showInputDialog(this, "Please enter your new username.");
+            String newName = JOptionPane.showInputDialog(this, "Please enter your username.");
+            System.out.println(newName == "null");
             connection.setSelf(new ChatPerson(newName, "online"));
+            System.out.println("USERNAME " + connection.getSelf().getName());
+            if (connection.getSelf() == null) {
+                System.out.println("hi");
+                changeUsernameMenuItemActionPerformed(evt);
+            }
         } catch (IOException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_changeUsernameMenuItemActionPerformed
-
+    
     private void changeServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeServerMenuItemActionPerformed
         try {
             String address = JOptionPane.showInputDialog(this, "Server address:");
@@ -184,7 +191,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_changeServerMenuItemActionPerformed
-
+    
     private void messageTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTextFieldKeyTyped
         if (evt.getKeyChar() == '\n') {
             sendButtonActionPerformed(null);
@@ -198,6 +205,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 try {
                     new MainGUI().setVisible(true);
@@ -226,26 +234,25 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     @Override
     public void update(Observable o, Object arg) {
         if (o instanceof ChatConnection) {
-
             if (arg instanceof ChatMessage) {
                 // Display the message. It's from another user.
                 mainTextArea.append(((ChatMessage) arg).getSender() + ": " + ((ChatMessage) arg).getMessage() + "\n");
                 mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
+                log.messageReceived((ChatMessage) arg);
             } else if (arg instanceof ChatPerson) {
                 // Notify us of user connection. TODO Also add user to list
                 mainTextArea.append(((ChatPerson) arg).getName() + " has entered\n");
                 mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
+                log.personLoggedIn((ChatPerson) arg);
             } else if (arg instanceof ServerMessage) {
                 // Message from server. Display special message depending on contents.
                 ServerMessage message = (ServerMessage) arg;
-                if (message.getServerCode() == 1) {
-                    ChatPerson person=(ChatPerson)message.getData();
-                    System.out.println(person.getName());
-                }
+                processMessage(message);
+                log.serverMessageReceived((ServerMessage) arg);
             }
         }
     }
-
+    
     private void initConnection() throws UnknownHostException, IOException {
         System.out.println("init connection");
         connection = new ChatConnection("localhost", 3191);
@@ -253,6 +260,13 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         Thread t = new Thread(connection);
         t.start();
         changeUsernameMenuItemActionPerformed(null);
-        statusBarLabel.setText("Connected to " + connection.getHost());
+        statusBarLabel.setText("Connected to " + connection.getHost() + " as " + connection.getSelf().getName());
+    }
+    
+    private void processMessage(ServerMessage message) {
+        if (message.getServerCode() == 1) {
+            ChatPerson person = (ChatPerson) message.getData();
+            System.out.println(person.getName());
+        }
     }
 }
