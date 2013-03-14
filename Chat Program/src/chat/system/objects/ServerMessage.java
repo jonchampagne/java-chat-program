@@ -8,10 +8,18 @@ import java.io.Serializable;
 
 /**
  * A message returned by the server. Usually a reply to a request.
+ *
  * @author jon
  */
 public class ServerMessage implements Serializable {
 
+    /*
+     * Server Codes:
+     * 1 - Client Disconnected
+     * 2 - Request Client List
+     * 
+     */
+    
     private int serverCode;
     private String message;
     private Object data;
@@ -41,5 +49,9 @@ public class ServerMessage implements Serializable {
 
     public String getMessage() {
         return message;
+    }
+
+    public Object getData() {
+        return data;
     }
 }
