@@ -89,13 +89,7 @@ public class ClientConnection extends Observable implements Runnable, Observer {
                     Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (arg instanceof ServerMessage) {
-                if (((ServerMessage) arg).getServerCode() == 1) {
-                    try {
-                        oOut.writeObject(arg);
-                    } catch (IOException ex) {
-                        Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
+                parseServerMessage((ServerMessage)arg);
             }
         }
     }
@@ -108,5 +102,25 @@ public class ClientConnection extends Observable implements Runnable, Observer {
     public ChatPerson getName() {
         //System.out.println("get name");
         return name;
+    }
+
+    private void parseServerMessage(ServerMessage message) {
+        if (message.getServerCode() == 1) {
+            try {
+                oOut.writeObject(message);
+            } catch (IOException ex) {
+                Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if (message.getServerCode() == 3) {
+            // Only send it if we requested it. Saves bandwidth
+            // and good for security
+            if (message.getMessage().equalsIgnoreCase(name.getName())) {
+                try {
+                    oOut.writeObject(message);
+                } catch (IOException ex) {
+                    Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
 }

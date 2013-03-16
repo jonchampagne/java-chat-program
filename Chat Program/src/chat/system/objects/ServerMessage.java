@@ -17,6 +17,7 @@ public class ServerMessage implements Serializable {
      * Server Codes:
      * 1 - Client Disconnected
      * 2 - Request Client List
+     * 3 - ChatPerson to specific connection
      * 
      */
     
