@@ -4,6 +4,7 @@
  */
 package chat.system.server;
 
+import chat.system.gui.ChatLog;
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
 import chat.system.objects.ServerMessage;
@@ -25,6 +26,7 @@ public class Server extends Observable implements Observer {
 
     ServerSocket ss;
     ArrayList<ChatPerson> people;
+    ChatLog log;
 
     /**
      * Starts the server
@@ -52,7 +54,8 @@ public class Server extends Observable implements Observer {
             System.err.println("Could not start server. Could not open port");
         }
         people = new ArrayList<>();
-        System.out.println("Listening for clients");
+        log=new ChatLog(System.out);
+        log.otherMessage("START Server Started");
         listenForClients();
     }
 
@@ -63,11 +66,14 @@ public class Server extends Observable implements Observer {
             // Echo to all clients
             if (arg instanceof ChatMessage) {
                 this.setChanged();
+                log.messageReceived((ChatMessage)arg);
                 this.notifyObservers(arg);
             } else if (arg instanceof ServerMessage) {
+                log.serverMessageReceived((ServerMessage)arg);
                 parseRequest((ServerMessage) arg);
             } else if (arg instanceof ChatPerson) {
                 people.add((ChatPerson) arg);
+                log.personLoggedIn((ChatPerson)arg);
                 this.setChanged();
                 this.notifyObservers(arg);
             }
