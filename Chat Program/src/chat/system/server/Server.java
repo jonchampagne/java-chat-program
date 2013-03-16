@@ -4,7 +4,7 @@
  */
 package chat.system.server;
 
-import chat.system.gui.ChatLog;
+import chat.system.objects.ChatLog;
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
 import chat.system.objects.ServerMessage;
@@ -54,7 +54,7 @@ public class Server extends Observable implements Observer {
             System.err.println("Could not start server. Could not open port");
         }
         people = new ArrayList<>();
-        log=new ChatLog(System.out);
+        log = new ChatLog(System.out);
         log.otherMessage("START Server Started");
         listenForClients();
     }
@@ -66,14 +66,14 @@ public class Server extends Observable implements Observer {
             // Echo to all clients
             if (arg instanceof ChatMessage) {
                 this.setChanged();
-                log.messageReceived((ChatMessage)arg);
+                log.messageReceived((ChatMessage) arg);
                 this.notifyObservers(arg);
             } else if (arg instanceof ServerMessage) {
-                log.serverMessageReceived((ServerMessage)arg);
+                log.serverMessageReceived((ServerMessage) arg);
                 parseRequest((ServerMessage) arg);
             } else if (arg instanceof ChatPerson) {
                 people.add((ChatPerson) arg);
-                log.personLoggedIn((ChatPerson)arg);
+                log.personLoggedIn((ChatPerson) arg);
                 this.setChanged();
                 this.notifyObservers(arg);
             }
@@ -101,13 +101,20 @@ public class Server extends Observable implements Observer {
     }
 
     private void parseRequest(ServerMessage serverMessage) {
-        //System.out.println("parse request");
         if (serverMessage.getServerCode() == 1) {
             // Send it to all clients
             this.setChanged();
             this.notifyObservers(serverMessage);
         } else if (serverMessage.getServerCode() == 2) {
-            // Loop through and send all clients one at a time
+            returnPeople(serverMessage);
+        }
+    }
+
+    private void returnPeople(ServerMessage serverMessage) {
+        ChatPerson returnee = ((ChatPerson) serverMessage.getData());
+        for (int i = 0; i < people.size(); i++) {
+            this.setChanged();
+            this.notifyObservers(new ServerMessage(3,returnee.getName(),people.get(i)));
         }
     }
 }
