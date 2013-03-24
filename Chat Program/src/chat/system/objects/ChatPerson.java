@@ -8,10 +8,10 @@ import java.io.Serializable;
 
 /**
  * A person logged onto the server
- * 
+ *
  * @author jon
  */
-public class ChatPerson implements Serializable{
+public class ChatPerson implements Serializable {
 
     private String name;
     private String status;
@@ -31,5 +31,10 @@ public class ChatPerson implements Serializable{
 
     public String getStatus() {
         return status;
+    }
+
+    @Override
+    public String toString() {
+        return this.getName();
     }
 }

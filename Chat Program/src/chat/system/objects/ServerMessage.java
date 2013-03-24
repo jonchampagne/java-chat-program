@@ -18,6 +18,8 @@ public class ServerMessage implements Serializable {
      * 1 - Client Disconnected
      * 2 - Request Client List
      * 3 - ChatPerson to specific connection
+     * 4 - Person Is Typing
+     * 5 - Person Has stopped typing
      * 
      */
     

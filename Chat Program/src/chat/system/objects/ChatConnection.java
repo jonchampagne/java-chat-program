@@ -34,6 +34,7 @@ public class ChatConnection extends Observable implements Runnable {
         oIn = new ObjectInputStream(server.getInputStream());
         self = new ChatPerson(uname);
         oOut.writeObject(self);
+        this.requestUserList();
     }
 
     @Override
@@ -49,7 +50,7 @@ public class ChatConnection extends Observable implements Runnable {
                     this.setChanged();
                     this.notifyObservers(o);
                 } else if (o instanceof ServerMessage) {
-                    if (((ServerMessage) o).getServerCode() == 1) {
+                    if (((ServerMessage) o).getServerCode() == 1 || ((ServerMessage) o).getServerCode() == 3 || ((ServerMessage) o).getServerCode() == 4) {
                         this.setChanged();
                         this.notifyObservers(o);
                     }
@@ -117,5 +118,15 @@ public class ChatConnection extends Observable implements Runnable {
 
     public String getHost() {
         return server.getInetAddress().getCanonicalHostName();
+    }
+
+    private void requestUserList() throws IOException {
+        ServerMessage message = new ServerMessage(2, self);
+        this.sendObject(message);
+    }
+
+    public void notifyTyping() throws IOException {
+        ServerMessage message=new ServerMessage(4,self);
+        this.sendObject(message);
     }
 }
