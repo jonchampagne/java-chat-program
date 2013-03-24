@@ -4,6 +4,7 @@
  */
 package chat.system.gui;
 
+import chat.system.objects.ChatLog;
 import chat.system.objects.ChatConnection;
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
