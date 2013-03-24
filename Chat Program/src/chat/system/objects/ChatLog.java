@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package chat.system.gui;
+package chat.system.objects;
 
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
