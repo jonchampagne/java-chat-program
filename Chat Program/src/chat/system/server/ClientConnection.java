@@ -63,6 +63,8 @@ public class ClientConnection extends Observable implements Runnable, Observer {
                 Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
             } catch (ClassNotFoundException ex) {
                 Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NullPointerException ex) {
+                //Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         try {
@@ -81,7 +83,7 @@ public class ClientConnection extends Observable implements Runnable, Observer {
     @Override
     public void update(Observable o, Object arg) {
         //System.out.println("update");
-        if (o instanceof Server) {
+        if (o instanceof ChatRoom) {
             if (arg instanceof ChatMessage || arg instanceof ChatPerson) {
                 try {
                     oOut.writeObject(arg);
@@ -89,7 +91,11 @@ public class ClientConnection extends Observable implements Runnable, Observer {
                     Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
                 }
             } else if (arg instanceof ServerMessage) {
-                parseServerMessage((ServerMessage)arg);
+                try {
+                    parseServerMessage((ServerMessage) arg);
+                } catch (IOException ex) {
+                    Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }
@@ -104,7 +110,7 @@ public class ClientConnection extends Observable implements Runnable, Observer {
         return name;
     }
 
-    private void parseServerMessage(ServerMessage message) {
+    private void parseServerMessage(ServerMessage message) throws IOException {
         if (message.getServerCode() == 1) {
             try {
                 oOut.writeObject(message);
@@ -120,6 +126,10 @@ public class ClientConnection extends Observable implements Runnable, Observer {
                 } catch (IOException ex) {
                     Logger.getLogger(ClientConnection.class.getName()).log(Level.SEVERE, null, ex);
                 }
+            }
+        } else if (message.getServerCode() == 4) {
+            if (!name.getName().equalsIgnoreCase(((ChatPerson) message.getData()).getName())) {
+                oOut.writeObject(message);
             }
         }
     }
