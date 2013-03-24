@@ -4,8 +4,8 @@
  */
 package chat.system.gui;
 
-import chat.system.objects.ChatLog;
 import chat.system.objects.ChatConnection;
+import chat.system.objects.ChatLog;
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
 import chat.system.objects.ServerMessage;
@@ -24,9 +24,10 @@ import javax.swing.JOptionPane;
  * @author jon
  */
 public class MainGUI extends javax.swing.JFrame implements Observer {
-    
+
     ChatConnection connection;
     ChatLog log;
+    PeopleList people;
 
     /**
      * Creates new form MainGUI
@@ -37,6 +38,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         log = new ChatLog(new FileOutputStream(new File("chat.log")));
         mainTextArea.setLineWrap(true);
         mainTextArea.setWrapStyleWord(true);
+        people = new PeopleList(peopleList);
     }
 
     /**
@@ -53,6 +55,8 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         mainTextArea = new javax.swing.JTextArea();
         sendButton = new javax.swing.JButton();
         statusBarLabel = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        peopleList = new javax.swing.JList();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -64,6 +68,9 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         setTitle("Chat");
 
         messageTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                messageTextFieldKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 messageTextFieldKeyTyped(evt);
             }
@@ -84,6 +91,9 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         statusBarLabel.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
         statusBarLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         statusBarLabel.setText("Ready");
+
+        peopleList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane2.setViewportView(peopleList);
 
         fileMenu.setText("File");
 
@@ -127,22 +137,29 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(statusBarLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(messageTextField)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(sendButton)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(messageTextField)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sendButton))
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 400, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(sendButton))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(sendButton)))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 344, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusBarLabel)
                 .addContainerGap())
@@ -154,7 +171,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
         System.exit(0);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
-    
+
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         ChatMessage m = new ChatMessage(messageTextField.getText(), connection.getSelf().getName());
         try {
@@ -163,9 +180,9 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         } catch (IOException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }//GEN-LAST:event_sendButtonActionPerformed
-    
+
     private void changeUsernameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeUsernameMenuItemActionPerformed
         try {
             String newName = JOptionPane.showInputDialog(this, "Please enter your username.");
@@ -180,7 +197,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_changeUsernameMenuItemActionPerformed
-    
+
     private void changeServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeServerMenuItemActionPerformed
         try {
             String address = JOptionPane.showInputDialog(this, "Server address:");
@@ -192,12 +209,22 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_changeServerMenuItemActionPerformed
-    
+
     private void messageTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTextFieldKeyTyped
         if (evt.getKeyChar() == '\n') {
             sendButtonActionPerformed(null);
+        } else if (!messageTextField.getText().equalsIgnoreCase("")) {
+            try {
+                connection.notifyTyping();
+            } catch (IOException ex) {
+                log.otherMessage("ERROR IOException while typing");
+            }
         }
     }//GEN-LAST:event_messageTextFieldKeyTyped
+
+    private void messageTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTextFieldKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_messageTextFieldKeyPressed
 
     /**
      * @param args the command line arguments
@@ -226,8 +253,10 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea mainTextArea;
     private javax.swing.JTextField messageTextField;
+    private javax.swing.JList peopleList;
     private javax.swing.JButton sendButton;
     private javax.swing.JLabel statusBarLabel;
     // End of variables declaration//GEN-END:variables
@@ -242,18 +271,17 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
                 log.messageReceived((ChatMessage) arg);
             } else if (arg instanceof ChatPerson) {
                 // Notify us of user connection. TODO Also add user to list
-                mainTextArea.append(((ChatPerson) arg).getName() + " has entered\n");
-                mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
-                log.personLoggedIn((ChatPerson) arg);
+                personLoggedIn((ChatPerson) arg);
             } else if (arg instanceof ServerMessage) {
                 // Message from server. Display special message depending on contents.
+                System.out.println("Server message received");
                 ServerMessage message = (ServerMessage) arg;
                 processMessage(message);
                 log.serverMessageReceived((ServerMessage) arg);
             }
         }
     }
-    
+
     private void initConnection() throws UnknownHostException, IOException {
         System.out.println("init connection");
         connection = new ChatConnection("localhost", 3191);
@@ -263,11 +291,34 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         changeUsernameMenuItemActionPerformed(null);
         statusBarLabel.setText("Connected to " + connection.getHost() + " as " + connection.getSelf().getName());
     }
-    
+
     private void processMessage(ServerMessage message) {
         if (message.getServerCode() == 1) {
             ChatPerson person = (ChatPerson) message.getData();
             System.out.println(person.getName());
+        } else if (message.getServerCode() == 3) {
+            System.out.println(((ChatPerson) message.getData()).getName() + " has logged in");
+            personLoggedIn((ChatPerson) message.getData());
+        } else if (message.getServerCode() == 4) {
+            ChatPerson person = (ChatPerson) message.getData();
+            personIsTyping(person);
         }
+    }
+
+    private void personLoggedIn(ChatPerson chatPerson) {
+        mainTextArea.append(((ChatPerson) chatPerson).getName() + " has entered\n");
+        mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
+        people.add(chatPerson);
+        updatePeopleList();
+        log.personLoggedIn((ChatPerson) chatPerson);
+    }
+
+    private void updatePeopleList() {
+        peopleList.setListData(people.toArray());
+    }
+
+    private void personIsTyping(ChatPerson person) {
+        mainTextArea.append(((ChatPerson) person).getName() + " is typing\n");
+        mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
     }
 }
