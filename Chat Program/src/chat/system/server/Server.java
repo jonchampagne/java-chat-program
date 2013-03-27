@@ -101,7 +101,11 @@ public class Server extends Observable implements Observer {
             this.setChanged();
             this.notifyObservers(serverMessage);
         } else if (serverMessage.getServerCode() == 2) {
-            // Loop through and send all clients one at a time
+            for (int i = 0; i < people.size(); i++) {
+                this.setChanged();
+                this.notifyObservers(people.get(i));
+                System.out.println(people.get(i).getName());
+            }
         }
     }
 }

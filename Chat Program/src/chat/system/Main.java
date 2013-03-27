@@ -8,8 +8,6 @@ import chat.system.gui.MainGUI;
 import chat.system.server.Server;
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
