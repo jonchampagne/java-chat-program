@@ -34,6 +34,7 @@ public class ChatConnection extends Observable implements Runnable {
         oIn = new ObjectInputStream(server.getInputStream());
         self = new ChatPerson(uname);
         oOut.writeObject(self);
+        oOut.writeObject(new ServerMessage(2));
     }
 
     @Override
@@ -41,11 +42,13 @@ public class ChatConnection extends Observable implements Runnable {
         while (true) {
             try {
                 Object o = oIn.readObject();
+                System.out.println(o);
                 if (o instanceof ChatMessage) {
                     System.out.println("changed");
                     this.setChanged();
                     this.notifyObservers(o);
                 } else if (o instanceof ChatPerson) {
+                    //System.out.println(((ChatPerson)o).getName());
                     this.setChanged();
                     this.notifyObservers(o);
                 } else if (o instanceof ServerMessage) {

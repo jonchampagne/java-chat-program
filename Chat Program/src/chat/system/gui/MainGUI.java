@@ -4,8 +4,8 @@
  */
 package chat.system.gui;
 
-import chat.system.objects.ChatLog;
 import chat.system.objects.ChatConnection;
+import chat.system.objects.ChatLog;
 import chat.system.objects.ChatMessage;
 import chat.system.objects.ChatPerson;
 import chat.system.objects.ServerMessage;
@@ -24,17 +24,19 @@ import javax.swing.JOptionPane;
  * @author jon
  */
 public class MainGUI extends javax.swing.JFrame implements Observer {
-    
+
     ChatConnection connection;
     ChatLog log;
+    ChatPersonList list;
 
     /**
      * Creates new form MainGUI
      */
     public MainGUI() throws UnknownHostException, IOException {
+        list = new ChatPersonList();
+        log = new ChatLog(new FileOutputStream(new File("chat.log")));
         initComponents();
         initConnection();
-        log = new ChatLog(new FileOutputStream(new File("chat.log")));
         mainTextArea.setLineWrap(true);
         mainTextArea.setWrapStyleWord(true);
     }
@@ -53,9 +55,11 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         mainTextArea = new javax.swing.JTextArea();
         sendButton = new javax.swing.JButton();
         statusBarLabel = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jList1 = new javax.swing.JList();
         jMenuBar1 = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
-        jMenuItem1 = new javax.swing.JMenuItem();
+        quitMenuOption = new javax.swing.JMenuItem();
         editMenu = new javax.swing.JMenu();
         changeUsernameMenuItem = new javax.swing.JMenuItem();
         changeServerMenuItem = new javax.swing.JMenuItem();
@@ -85,15 +89,18 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         statusBarLabel.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         statusBarLabel.setText("Ready");
 
+        jList1.setModel(list);
+        jScrollPane2.setViewportView(jList1);
+
         fileMenu.setText("File");
 
-        jMenuItem1.setText("Quit");
-        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+        quitMenuOption.setText("Quit");
+        quitMenuOption.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jMenuItem1ActionPerformed(evt);
+                quitMenuOptionActionPerformed(evt);
             }
         });
-        fileMenu.add(jMenuItem1);
+        fileMenu.add(quitMenuOption);
 
         jMenuBar1.add(fileMenu);
 
@@ -127,18 +134,23 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(statusBarLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(messageTextField)
+                        .addComponent(messageTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(sendButton)))
+                        .addComponent(sendButton))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 293, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 299, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(messageTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -151,10 +163,10 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+    private void quitMenuOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quitMenuOptionActionPerformed
         System.exit(0);
-    }//GEN-LAST:event_jMenuItem1ActionPerformed
-    
+    }//GEN-LAST:event_quitMenuOptionActionPerformed
+
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         ChatMessage m = new ChatMessage(messageTextField.getText(), connection.getSelf().getName());
         try {
@@ -163,9 +175,9 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         } catch (IOException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }//GEN-LAST:event_sendButtonActionPerformed
-    
+
     private void changeUsernameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeUsernameMenuItemActionPerformed
         try {
             String newName = JOptionPane.showInputDialog(this, "Please enter your username.");
@@ -180,7 +192,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_changeUsernameMenuItemActionPerformed
-    
+
     private void changeServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeServerMenuItemActionPerformed
         try {
             String address = JOptionPane.showInputDialog(this, "Server address:");
@@ -192,7 +204,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_changeServerMenuItemActionPerformed
-    
+
     private void messageTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTextFieldKeyTyped
         if (evt.getKeyChar() == '\n') {
             sendButtonActionPerformed(null);
@@ -223,11 +235,13 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     private javax.swing.JMenuItem changeUsernameMenuItem;
     private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JList jList1;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea mainTextArea;
     private javax.swing.JTextField messageTextField;
+    private javax.swing.JMenuItem quitMenuOption;
     private javax.swing.JButton sendButton;
     private javax.swing.JLabel statusBarLabel;
     // End of variables declaration//GEN-END:variables
@@ -241,10 +255,12 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
                 mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
                 log.messageReceived((ChatMessage) arg);
             } else if (arg instanceof ChatPerson) {
+                System.out.println(((ChatPerson) arg).getName());
                 // Notify us of user connection. TODO Also add user to list
                 mainTextArea.append(((ChatPerson) arg).getName() + " has entered\n");
                 mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
                 log.personLoggedIn((ChatPerson) arg);
+                list.addPerson((ChatPerson) arg);
             } else if (arg instanceof ServerMessage) {
                 // Message from server. Display special message depending on contents.
                 ServerMessage message = (ServerMessage) arg;
@@ -253,7 +269,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             }
         }
     }
-    
+
     private void initConnection() throws UnknownHostException, IOException {
         System.out.println("init connection");
         connection = new ChatConnection("localhost", 3191);
@@ -263,7 +279,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         changeUsernameMenuItemActionPerformed(null);
         statusBarLabel.setText("Connected to " + connection.getHost() + " as " + connection.getSelf().getName());
     }
-    
+
     private void processMessage(ServerMessage message) {
         if (message.getServerCode() == 1) {
             ChatPerson person = (ChatPerson) message.getData();
