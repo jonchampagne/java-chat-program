@@ -83,12 +83,9 @@ public class Server extends Observable implements Observer {
                 ClientConnection cc = new ClientConnection(s);
                 cc.addObserver(this);
                 this.addObserver(cc);
-                people.add(cc.getName());
                 Thread t = new Thread(cc);
                 t.start();
-            } catch (ClassNotFoundException ex) {
-                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+            } catch (    ClassNotFoundException | IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
