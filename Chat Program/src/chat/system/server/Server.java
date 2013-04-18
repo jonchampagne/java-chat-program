@@ -102,9 +102,11 @@ public class Server extends Observable implements Observer {
             this.notifyObservers(serverMessage);
         } else if (serverMessage.getServerCode() == 2) {
             for (int i = 0; i < people.size(); i++) {
-                this.setChanged();
-                this.notifyObservers(people.get(i));
-                System.out.println(people.get(i).getName());
+                if (people.get(i).getName() != null) {
+                    this.setChanged();
+                    this.notifyObservers(people.get(i));
+                    System.out.println(people.get(i).getName());
+                }
             }
         }
     }
