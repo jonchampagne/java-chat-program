@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * A server's connection to a client
+ * A server's connection to a client. Runs in background. Listens for client's messages
  *
  * @author jon
  */
@@ -30,7 +30,7 @@ public class ClientConnection extends Observable implements Runnable, Observer {
     private ChatPerson name;
 
     /**
-     *
+     * 
      * @param s The socket connected to the client
      * @throws IOException
      * @throws ClassNotFoundException

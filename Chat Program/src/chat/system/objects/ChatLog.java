@@ -4,14 +4,11 @@
  */
 package chat.system.objects;
 
-import chat.system.objects.ChatMessage;
-import chat.system.objects.ChatPerson;
-import chat.system.objects.ServerMessage;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
 /**
- *
+ * Logs everything happening. Used for debugging
  * @author jon
  */
 public class ChatLog {

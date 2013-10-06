@@ -17,13 +17,15 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Chat server
+ * Chat server. Manages all the clients and proliferates the messages to them.
  *
  * @author jon
  */
 public class Server extends Observable implements Observer {
-
+    
+    // Listens for new connections and returns a Socket object for them.
     ServerSocket ss;
+    // PEOPLEZ!!!
     ArrayList<ChatPerson> people;
 
     /**
@@ -44,9 +46,8 @@ public class Server extends Observable implements Observer {
      * A chat server
      */
     public Server() {
-        //System.out.println("server");
-        //System.out.println("Server starting");
         try {
+            // The port to run on.
             ss = new ServerSocket(3191);
         } catch (IOException ex) {
             System.err.println("Could not start server. Could not open port");
@@ -75,9 +76,9 @@ public class Server extends Observable implements Observer {
     }
 
     private void listenForClients() {
-        //System.out.println("listen for clients");
         while (true) {
             try {
+                // Waits for a client to connect, then give a Socket for them
                 Socket s = ss.accept();
                 System.out.println("New Client" + s.getInetAddress());
                 ClientConnection cc = new ClientConnection(s);

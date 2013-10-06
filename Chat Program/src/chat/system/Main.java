@@ -22,10 +22,12 @@ public class Main {
      * @param args the command line arguments
      */
     public static void main(String[] args) throws UnknownHostException, IOException, InterruptedException {
+        // Print out all args
         for (int i = 0; i < args.length; i++) {
             System.out.println(args[i]);
         }
 
+        // Run the server in a background thread
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -34,6 +36,9 @@ public class Main {
         });
         t.start();
         Thread.sleep(2500);
+        
+        
+        // Show the main gui
         new MainGUI().setVisible(true);
     }
 }

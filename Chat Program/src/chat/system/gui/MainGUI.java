@@ -26,7 +26,9 @@ import javax.swing.JOptionPane;
 public class MainGUI extends javax.swing.JFrame implements Observer {
 
     ChatConnection connection;
+    // Log file of everything happening
     ChatLog log;
+    // The list of people in the chat room
     ChatPersonList list;
 
     /**
@@ -35,9 +37,13 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     public MainGUI() throws UnknownHostException, IOException {
         list = new ChatPersonList();
         log = new ChatLog(new FileOutputStream(new File("chat.log")));
+        // Make the gui
         initComponents();
+        // Connect to the server. Default is to connect to the local one we made during startup.
         initConnection();
+        // Set up linewrap in the message typing area
         mainTextArea.setLineWrap(true);
+        // Make it wrap by word, not be character
         mainTextArea.setWrapStyleWord(true);
     }
 
@@ -163,14 +169,27 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Quits the program
+     *
+     * @param evt
+     */
     private void quitMenuOptionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_quitMenuOptionActionPerformed
+        // Quit chatting
         System.exit(0);
     }//GEN-LAST:event_quitMenuOptionActionPerformed
-
+    /**
+     * Sends a text message to the server
+     *
+     * @param evt
+     */
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
+        // Object containing all the data to be sent to the server
         ChatMessage m = new ChatMessage(messageTextField.getText(), connection.getSelf().getName());
         try {
+            // Sends a raw object over the network to the server
             connection.sendObject(m);
+            // clear the message box
             messageTextField.setText("");
         } catch (IOException ex) {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -178,10 +197,15 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
 
     }//GEN-LAST:event_sendButtonActionPerformed
 
+    /**
+     * Sets the username to something else
+     *
+     * @param evt
+     */
     private void changeUsernameMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeUsernameMenuItemActionPerformed
         try {
             String newName = JOptionPane.showInputDialog(this, "Please enter your username.");
-            System.out.println(newName == "null");
+            System.out.println(newName.equalsIgnoreCase("null"));
             connection.setSelf(new ChatPerson(newName, "online"));
             System.out.println("USERNAME " + connection.getSelf().getName());
             if (connection.getSelf() == null) {
@@ -192,7 +216,11 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_changeUsernameMenuItemActionPerformed
-
+    /**
+     * Swaps to another server to chat on
+     *
+     * @param evt
+     */
     private void changeServerMenuItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeServerMenuItemActionPerformed
         try {
             String address = JOptionPane.showInputDialog(this, "Server address:");
@@ -204,32 +232,16 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
             Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_changeServerMenuItemActionPerformed
-
+    /**
+     * send the message if they hit enter
+     *
+     * @param evt
+     */
     private void messageTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageTextFieldKeyTyped
         if (evt.getKeyChar() == '\n') {
             sendButtonActionPerformed(null);
         }
     }//GEN-LAST:event_messageTextFieldKeyTyped
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    new MainGUI().setVisible(true);
-                } catch (UnknownHostException ex) {
-                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem changeServerMenuItem;
     private javax.swing.JMenuItem changeUsernameMenuItem;
@@ -246,6 +258,13 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
     private javax.swing.JLabel statusBarLabel;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * reacts to various messages from the server, including people joining or
+     * leaving the chat room and people sending messages
+     *
+     * @param o
+     * @param arg
+     */
     @Override
     public void update(Observable o, Object arg) {
         if (o instanceof ChatConnection) {
@@ -255,6 +274,7 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
                 mainTextArea.setCaretPosition(mainTextArea.getDocument().getLength());
                 log.messageReceived((ChatMessage) arg);
             } else if (arg instanceof ChatPerson) {
+                // Someone joined the room.
                 System.out.println(((ChatPerson) arg).getName());
                 // Notify us of user connection. TODO Also add user to list
                 mainTextArea.append(((ChatPerson) arg).getName() + " has entered\n");
@@ -270,6 +290,12 @@ public class MainGUI extends javax.swing.JFrame implements Observer {
         }
     }
 
+    /**
+     * Connects to the server. By default localhost
+     *
+     * @throws UnknownHostException
+     * @throws IOException
+     */
     private void initConnection() throws UnknownHostException, IOException {
         System.out.println("init connection");
         connection = new ChatConnection("localhost", 3191);
